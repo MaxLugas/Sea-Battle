@@ -53,14 +53,18 @@ draw_table()
 def button_show_enemy():
     for i in range(0, s_x):
         for j in range(0, s_y):
-            if enemy_ships[j][i]> 0:
+            if enemy_ships[j][i] > 0:
                 _id = canvas.create_rectangle(i * step_x, j * step_y, i * step_x + step_x, j * step_y + step_y,
                                               fill="red")
                 list_ids.append(_id)
 
 
 def button_begin_again():
-    pass
+    global list_ids
+    for el in list_ids:
+        canvas.delete(el)
+    list_ids = []
+    generate_enemy_ships()
 
 
 b0 = Button(tk, text='Show enemy ships', command=button_show_enemy)
@@ -87,7 +91,7 @@ canvas.bind_all('<Button-1>', add_to_all)  # left mouse button
 canvas.bind_all('<Button-3>', add_to_all)  # right mouse button
 
 
-def generate_eneme_ships():
+def generate_enemy_ships():
     global enemy_ships
     ships_list = []
     for i in range(0, ships):  # generating a list of random ship lengths
@@ -150,7 +154,6 @@ def generate_eneme_ships():
                         except Exception:
                             pass
 
-        # делаем подсчет 1ц
         sum_1_enemy = 0
         for i in range(0, s_x):
             for j in range(0, s_y):
@@ -162,7 +165,7 @@ def generate_eneme_ships():
         print(enemy_ships)
 
 
-generate_eneme_ships()
+generate_enemy_ships()
 
 while app_running:
     if app_running:
