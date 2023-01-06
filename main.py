@@ -28,6 +28,8 @@ boom = [[0 for i in range(s_y)] for i in range(s_x)]  # hit list
 
 ships_list = []  # ships list player1 and player2
 
+player_move = False  # if True then second player
+
 
 def on_closing():
     global app_running
@@ -67,6 +69,23 @@ t1.place(x=size_canvas_x + menu_x + size_canvas_x // 2 - t1.winfo_reqwidth() // 
 t0.configure(bg='red')
 t0.configure(bg='#f0f0f0')
 
+t3 = Label(tk, text='@@@@@@', font=('Helvetica', 16))
+t3.place(x=size_canvas_x+step_x//3, y=3 * step_y)
+
+
+def mark_player(player_mark):
+    if player_mark:
+        t1.configure(bg='red')
+        t0.configure(bg='#f0f0f0')
+        t3.configure(text='Player №2 move')
+    else:
+        t0.configure(bg='red')
+        t1.configure(bg='#f0f0f0')
+        t3.configure(text='Player №1 move',)
+
+
+mark_player(player_move)
+
 
 def button_show_enemy1():
     for i in range(0, s_x):
@@ -74,7 +93,7 @@ def button_show_enemy1():
             if enemy_ships1[j][i] > 0:
                 color = 'red'
                 if points1[j][i] != -1:
-                    color = 'green'
+                    color = 'black'
                 _id = canvas.create_rectangle(i * step_x, j * step_y, i * step_x + step_x, j * step_y + step_y,
                                               fill=color)
                 list_ids.append(_id)
@@ -86,7 +105,7 @@ def button_show_enemy2():
             if enemy_ships2[j][i] > 0:
                 color = 'red'
                 if points2[j][i] != -1:
-                    color = 'green'
+                    color = 'black'
                 _id = canvas.create_rectangle(size_canvas_x + menu_x + i * step_x, j * step_y,
                                               size_canvas_x + menu_x + i * step_x + step_x, j * step_y + step_y,
                                               fill=color)
@@ -129,7 +148,7 @@ def draw_point(x, y):
         list_ids.append(id2)
 
     if enemy_ships1[y][x] > 0:
-        color = "black"
+        color = "green"
         id1 = canvas.create_rectangle(x * step_x, y * step_y + step_y // 2 - step_y // 10, x * step_x + step_x,
                                       y * step_y + step_y // 2 + step_y // 10, fill=color)
         id2 = canvas.create_rectangle(x * step_x + step_x // 2 - step_x // 10, y * step_y,
@@ -150,7 +169,7 @@ def draw_point2(x, y, offset_x=size_canvas_x + menu_x):
         list_ids.append(id2)
 
     if enemy_ships2[y][x] > 0:
-        color = "black"
+        color = "green"
         id1 = canvas.create_rectangle(offset_x + x * step_x, y * step_y + step_y // 2 - step_y // 10,
                                       offset_x + x * step_x + step_x,
                                       y * step_y + step_y // 2 + step_y // 10, fill=color)
@@ -193,7 +212,7 @@ def check_winner2_player2():
 
 
 def add_to_all(event):
-    global points1, points2
+    global points1, points2, player_move
     _type = 0  # left mouse button
     if event.num == 3:
         _type = 1  # right mouse button
@@ -203,24 +222,29 @@ def add_to_all(event):
     ip_y = mouse_y // step_y
 
     # first game field
-    if ip_x < s_x and ip_y < s_y:
+    if ip_x < s_x and ip_y < s_y and player_move:
         if points1[ip_y][ip_x] == -1:
             points1[ip_y][ip_x] = _type
+            player_move = False
             draw_point(ip_x, ip_y)
             if check_winner2():
-                messagebox.showinfo('SEA BATTLE', "Second player win!!!!")
+                player_move = True
+                messagebox.showinfo('SEA BATTLE', "Player №2 win!!!!")
                 points1 = [[10 for i in range(s_y)] for i in range(s_x)]
                 points2 = [[10 for i in range(s_y)] for i in range(s_x)]
 
     # second game field
-    if ip_x >= s_x + delta_menu_x and ip_x <= s_x + s_x + delta_menu_x and ip_y < s_y:
+    if ip_x >= s_x + delta_menu_x and ip_x <= s_x + s_x + delta_menu_x and ip_y < s_y and not player_move:
         if points2[ip_y][ip_x - s_x - delta_menu_x] == -1:
             points2[ip_y][ip_x - s_x - delta_menu_x] = _type
+            player_move = True
             draw_point2(ip_x - s_x - delta_menu_x, ip_y)
             if check_winner2_player2():
-                messagebox.showinfo('SEA BATTLE', "First player win!!!!")
+                player_move = False
+                messagebox.showinfo('SEA BATTLE', "Player №1 win!!!!")
                 points1 = [[10 for i in range(s_y)] for i in range(s_x)]
                 points2 = [[10 for i in range(s_y)] for i in range(s_x)]
+    mark_player(player_move)
 
 
 canvas.bind_all('<Button-1>', add_to_all)  # left mouse button
