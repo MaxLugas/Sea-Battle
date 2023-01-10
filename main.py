@@ -11,8 +11,13 @@ step_x = size_canvas_x // s_x  # horizontal step
 step_y = size_canvas_y // s_y  # vertical step
 size_canvas_x = step_x * s_x
 size_canvas_y = step_y * s_y
-delta_menu_x = 4
+
+txt_len_middle = '* Human vs Computer'
+size_font_x = 10
+len_txt_x = len(txt_len_middle) * size_font_x
+delta_menu_x = len_txt_x // step_x + 1
 menu_x = step_x * delta_menu_x
+
 menu_y = 40
 ships = s_x // 2  # maximum number of ships
 ship_len_1 = s_x // 5  # length of the first type of ship
@@ -81,7 +86,6 @@ t0.configure(bg='#f0f0f0')
 
 
 def change_rb():
-    print(rb_var.get())
     global computer_vs_human, add_to_label
     if rb_var.get():
         computer_vs_human = True
@@ -95,8 +99,8 @@ rb_var = BooleanVar()
 rb_1 = Radiobutton(tk, text='Human vs Computer', variable=rb_var, value=1, command=change_rb)
 rb_2 = Radiobutton(tk, text='Human vs Human', variable=rb_var, value=0, command=change_rb)
 
-rb_1.place(x=size_canvas_x + 20, y=150)
-rb_2.place(x=size_canvas_x + 20, y=170)
+rb_1.place(x=size_canvas_x + 100 - rb_1.winfo_reqwidth() // 2, y=150)
+rb_2.place(x=size_canvas_x + 100 - rb_2.winfo_reqwidth() // 2, y=170)
 
 if computer_vs_human:
     rb_1.select()
@@ -160,14 +164,14 @@ def button_begin_again():
     boom = [[0 for i in range(s_y)] for i in range(s_x)]
 
 
-b0 = Button(tk, text='Show player №1 ships', command=button_show_enemy1)
-b0.place(x=size_canvas_x + 20, y=30)
+b0 = Button(tk, text='Show player \n №1 ships', command=button_show_enemy1)
+b0.place(x=size_canvas_x + menu_x // 2 - b0.winfo_reqwidth() // 2, y=10)
 
-b1 = Button(tk, text='Show player №2 ships', command=button_show_enemy2)
-b1.place(x=size_canvas_x + 20, y=70)
+b1 = Button(tk, text='Show player \n №2 ships', command=button_show_enemy2)
+b1.place(x=size_canvas_x + menu_x // 2 - b1.winfo_reqwidth() // 2, y=60)
 
 b2 = Button(tk, text='Restart game', command=button_begin_again)
-b2.place(x=size_canvas_x + 20, y=110)
+b2.place(x=size_canvas_x + menu_x // 2 - b2.winfo_reqwidth() // 2, y=110)
 
 
 def draw_point(x, y):
@@ -327,46 +331,48 @@ def generate_enemy_ships():
             len = ships_list[i]
             horizont_vertikal = random.randrange(1, 3)  # 1- horizontal 2 - vertical
 
-            primerno_x = random.randrange(0, s_x)
-            if primerno_x + len > s_x:
-                primerno_x = primerno_x - len
+            approximately_x = random.randrange(0, s_x)
+            if approximately_x + len > s_x:
+                approximately_x = approximately_x - len
 
-            primerno_y = random.randrange(0, s_y)
-            if primerno_y + len > s_y:
-                primerno_y = primerno_y - len
+            approximately_y = random.randrange(0, s_y)
+            if approximately_y + len > s_y:
+                approximately_y = approximately_y - len
 
             if horizont_vertikal == 1:
-                if primerno_x + len <= s_x:
+                if approximately_x + len <= s_x:
                     for j in range(0, len):
                         try:
                             check_near_ships = 0
-                            check_near_ships = enemy_ships[primerno_y][primerno_x - 1] + \
-                                               enemy_ships[primerno_y][primerno_x + j] + \
-                                               enemy_ships[primerno_y][primerno_x + j + 1] + \
-                                               enemy_ships[primerno_y + 1][primerno_x + j + 1] + \
-                                               enemy_ships[primerno_y - 1][primerno_x + j + 1] + \
-                                               enemy_ships[primerno_y + 1][primerno_x + j] + \
-                                               enemy_ships[primerno_y - 1][primerno_x + j]
+                            check_near_ships = enemy_ships[approximately_y][approximately_x - 1] + \
+                                               enemy_ships[approximately_y][approximately_x + j] + \
+                                               enemy_ships[approximately_y][approximately_x + j + 1] + \
+                                               enemy_ships[approximately_y + 1][approximately_x + j + 1] + \
+                                               enemy_ships[approximately_y - 1][approximately_x + j + 1] + \
+                                               enemy_ships[approximately_y + 1][approximately_x + j] + \
+                                               enemy_ships[approximately_y - 1][approximately_x + j]
 
                             if check_near_ships == 0:  # write it down if there is nothing nearby
-                                enemy_ships[primerno_y][primerno_x + j] = i + 1  # write down the number of the ship
+                                enemy_ships[approximately_y][
+                                    approximately_x + j] = i + 1  # write down the number of the ship
                         except Exception:
                             pass
             if horizont_vertikal == 2:
-                if primerno_y + len <= s_y:
+                if approximately_y + len <= s_y:
                     for j in range(0, len):
                         try:
                             check_near_ships = 0
-                            check_near_ships = enemy_ships[primerno_y - 1][primerno_x] + \
-                                               enemy_ships[primerno_y + j][primerno_x] + \
-                                               enemy_ships[primerno_y + j + 1][primerno_x] + \
-                                               enemy_ships[primerno_y + j + 1][primerno_x + 1] + \
-                                               enemy_ships[primerno_y + j + 1][primerno_x - 1] + \
-                                               enemy_ships[primerno_y + j][primerno_x + 1] + \
-                                               enemy_ships[primerno_y + j][primerno_x - 1]
+                            check_near_ships = enemy_ships[approximately_y - 1][approximately_x] + \
+                                               enemy_ships[approximately_y + j][approximately_x] + \
+                                               enemy_ships[approximately_y + j + 1][approximately_x] + \
+                                               enemy_ships[approximately_y + j + 1][approximately_x + 1] + \
+                                               enemy_ships[approximately_y + j + 1][approximately_x - 1] + \
+                                               enemy_ships[approximately_y + j][approximately_x + 1] + \
+                                               enemy_ships[approximately_y + j][approximately_x - 1]
 
                             if check_near_ships == 0:  # write it down if there is nothing nearby
-                                enemy_ships[primerno_y + j][primerno_x] = i + 1  # write down the number of the ship
+                                enemy_ships[approximately_y + j][
+                                    approximately_x] = i + 1  # write down the number of the ship
                         except Exception:
                             pass
 
