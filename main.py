@@ -5,7 +5,7 @@ import time, random
 tk = Tk()
 app_running = True
 
-size_canvas_x = size_canvas_y = 500
+size_canvas_x = size_canvas_y = 400
 s_x = s_y = 10  # game size field
 step_x = size_canvas_x // s_x  # horizontal step
 step_y = size_canvas_y // s_y  # vertical step
@@ -29,6 +29,14 @@ boom = [[0 for i in range(s_y)] for i in range(s_x)]  # hit list
 ships_list = []  # ships list player1 and player2
 
 player_move = False  # if True then second player
+
+computer_vs_human = True  # if True then play versus computer
+if computer_vs_human:
+    add_to_label = '(Computer)'
+    player_move = False
+else:
+    add_to_label = ''
+    player_move = False
 
 
 def on_closing():
@@ -61,27 +69,28 @@ def draw_table(offset_x=0):
 draw_table()
 draw_table(size_canvas_x + menu_x)
 
-t0 = Label(tk, text='Player №1', font=('Helvetica', 16))
+t0 = Label(tk, text='Player №1', font=('Helvetica', 10))
 t0.place(x=size_canvas_x // 2 - t0.winfo_reqwidth() // 2, y=size_canvas_y + 3)
-t1 = Label(tk, text='Player №2', font=('Helvetica', 16))
+t1 = Label(tk, text='Player №2' + add_to_label, font=('Helvetica', 10))
 t1.place(x=size_canvas_x + menu_x + size_canvas_x // 2 - t1.winfo_reqwidth() // 2, y=size_canvas_y + 3)
 
 t0.configure(bg='red')
 t0.configure(bg='#f0f0f0')
 
-t3 = Label(tk, text='@@@@@@', font=('Helvetica', 16))
-t3.place(x=size_canvas_x+step_x//3, y=3 * step_y)
+t3 = Label(tk, text='@@@@@@', font=('Helvetica', 9))
+t3.place(x=size_canvas_x + menu_x // 2 - t3.winfo_reqwidth() // 2, y=size_canvas_y)
 
 
 def mark_player(player_mark):
     if player_mark:
         t1.configure(bg='red')
         t0.configure(bg='#f0f0f0')
-        t3.configure(text='Player №2 move')
+        t3.configure(text='Player №2 move' + add_to_label)
+        t3.place(x=size_canvas_x + menu_x // 2 - t3.winfo_reqwidth() // 2, y=size_canvas_y)
     else:
         t0.configure(bg='red')
         t1.configure(bg='#f0f0f0')
-        t3.configure(text='Player №1 move',)
+        t3.configure(text='Player №1 move', )
 
 
 mark_player(player_move)
@@ -211,6 +220,24 @@ def check_winner2_player2():
     return win
 
 
+def computer_move():
+    global points1, points2, player_move
+    tk.update()
+    time.sleep(1)
+    player_move = False
+    ip_x = random.randint(0, s_x - 1)
+    ip_y = random.randint(0, s_y - 1)
+    while not points1[ip_y][ip_x] == -1:
+        ip_x = random.randint(0, s_x - 1)
+        ip_y = random.randint(0, s_y - 1)
+    points1[ip_y][ip_x] = 7
+    draw_point(ip_x, ip_y)
+    if check_winner2():
+        messagebox.showinfo('SEA BATTLE', "Player №2 win!!!!" + add_to_label)
+        points1 = [[10 for i in range(s_y)] for i in range(s_x)]
+        points2 = [[10 for i in range(s_y)] for i in range(s_x)]
+
+
 def add_to_all(event):
     global points1, points2, player_move
     _type = 0  # left mouse button
@@ -244,6 +271,9 @@ def add_to_all(event):
                 messagebox.showinfo('SEA BATTLE', "Player №1 win!!!!")
                 points1 = [[10 for i in range(s_y)] for i in range(s_x)]
                 points2 = [[10 for i in range(s_y)] for i in range(s_x)]
+            elif computer_vs_human:
+                mark_player(player_move)
+                computer_move()
     mark_player(player_move)
 
 
