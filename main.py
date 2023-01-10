@@ -30,7 +30,7 @@ ships_list = []  # ships list player1 and player2
 
 player_move = False  # if True then second player
 
-computer_vs_human = True  # if True then play versus computer
+computer_vs_human = False  # if True then play versus computer
 if computer_vs_human:
     add_to_label = '(Computer)'
     player_move = False
@@ -73,24 +73,47 @@ t0 = Label(tk, text='Player №1', font=('Helvetica', 10))
 t0.place(x=size_canvas_x // 2 - t0.winfo_reqwidth() // 2, y=size_canvas_y + 3)
 t1 = Label(tk, text='Player №2' + add_to_label, font=('Helvetica', 10))
 t1.place(x=size_canvas_x + menu_x + size_canvas_x // 2 - t1.winfo_reqwidth() // 2, y=size_canvas_y + 3)
+t3 = Label(tk, text='@@@@@@', font=('Helvetica', 9))
+t3.place(x=size_canvas_x + menu_x // 2 - t3.winfo_reqwidth() // 2, y=size_canvas_y)
 
 t0.configure(bg='red')
 t0.configure(bg='#f0f0f0')
 
-t3 = Label(tk, text='@@@@@@', font=('Helvetica', 9))
-t3.place(x=size_canvas_x + menu_x // 2 - t3.winfo_reqwidth() // 2, y=size_canvas_y)
+
+def change_rb():
+    print(rb_var.get())
+    global computer_vs_human, add_to_label
+    if rb_var.get():
+        computer_vs_human = True
+        add_to_label = '(Computer)'
+    else:
+        computer_vs_human = False
+        add_to_label = ''
 
 
+rb_var = BooleanVar()
+rb_1 = Radiobutton(tk, text='Human vs Computer', variable=rb_var, value=1, command=change_rb)
+rb_2 = Radiobutton(tk, text='Human vs Human', variable=rb_var, value=0, command=change_rb)
+
+rb_1.place(x=size_canvas_x + 20, y=150)
+rb_2.place(x=size_canvas_x + 20, y=170)
+
+if computer_vs_human:
+    rb_1.select()
+
+
+# t0 for first player, t1 for second player
 def mark_player(player_mark):
     if player_mark:
         t1.configure(bg='red')
         t0.configure(bg='#f0f0f0')
-        t3.configure(text='Player №2 move' + add_to_label)
+        t3.configure(text='Player №2 move')
+        t1.configure(text='Player №2' + add_to_label)
         t3.place(x=size_canvas_x + menu_x // 2 - t3.winfo_reqwidth() // 2, y=size_canvas_y)
     else:
         t0.configure(bg='red')
         t1.configure(bg='#f0f0f0')
-        t3.configure(text='Player №1 move', )
+        t3.configure(text='Player №1 move')
 
 
 mark_player(player_move)
@@ -144,7 +167,7 @@ b1 = Button(tk, text='Show player №2 ships', command=button_show_enemy2)
 b1.place(x=size_canvas_x + 20, y=70)
 
 b2 = Button(tk, text='Restart game', command=button_begin_again)
-b2.place(x=size_canvas_x + 20, y=100)
+b2.place(x=size_canvas_x + 20, y=110)
 
 
 def draw_point(x, y):
